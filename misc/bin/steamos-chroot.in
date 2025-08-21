@@ -182,9 +182,16 @@ else
 fi
 
 [ -b "$ROOTFS_DEVICE" ] || fail "'$ROOTFS_DEVICE' is not a block device"
-[ -b "$EFI_DEVICE"    ] || fail "'$EFI_DEVICE' is not a block device"
-[ -b "$ESP_DEVICE"    ] || fail "'$ESP_DEVICE' is not a block device"
 [ -b "$VAR_DEVICE"    ] || fail "'$VAR_DEVICE' is not a block device"
+
+# aarch64 devices on old partition layouts don't have these, that's fine.
+if [[ -z "$(which vrdevice_path)" ]] || [[ -e /dev/disk/by-partsets/self/efi ]]; then
+    [ -b "$EFI_DEVICE"    ] || fail "'$EFI_DEVICE' is not a block device"
+    [ -b "$ESP_DEVICE"    ] || fail "'$ESP_DEVICE' is not a block device"
+else
+    EFI_DEVICE=""
+    ESP_DEVICE=""
+fi
 
 # Do the job
 
@@ -233,10 +240,18 @@ prepare_chroot_at() {
     mount --bind /proc $dir/proc
     mount --bind /run  $dir/run
     mount --bind /sys  $dir/sys
-    mount --bind /sys/firmware/efi/efivars $dir/sys/firmware/efi/efivars
+
+    # aarch64 does not have this directory
+    if [[ -d /sys/firmware/efi/efivars ]]; then
+        mount --bind /sys/firmware/efi/efivars $dir/sys/firmware/efi/efivars
+    fi
     mount -t tmpfs -o size=128M tmpfs $dir/tmp
-    mount "$EFI_DEVICE" $dir/efi
-    mount "$ESP_DEVICE" $dir/esp
+    if [[ -n "$EFI_DEVICE" ]]; then
+        mount "$EFI_DEVICE" $dir/efi
+    fi
+    if [[ -n "$ESP_DEVICE" ]]; then
+        mount "$ESP_DEVICE" $dir/esp
+    fi
     mount "$VAR_DEVICE" $dir/var
     if [ -d $dir/var/boot ]; then
         mount --bind $dir/var/boot $dir/boot
@@ -268,10 +283,16 @@ cleanup_chroot_at() {
         fi
     fi
     umount $dir/var  || :
-    umount $dir/esp  || :
-    umount $dir/efi  || :
+    if [[ -n "$ESP_DEVICE" ]]; then
+        umount $dir/esp  || :
+    fi
+    if [[ -n "$EFI_DEVICE" ]]; then
+        umount $dir/efi  || :
+    fi
     umount $dir/tmp  || :
-    umount $dir/sys/firmware/efi/efivars || :
+    if [[ -d $dir/sys/firmware/efi/efivars ]]; then
+        umount $dir/sys/firmware/efi/efivars || :
+    fi
     umount -R $dir/sys  || :
     umount $dir/run  || :
     umount -R $dir/proc || :

@@ -1,4 +1,4 @@
-systemd/opt.mount
+systemd/data.mount
 systemd/root.mount
 systemd/srv.mount
 systemd/var-cache-pacman.mount

@@ -1,1 +1,3 @@
+hibernation/hibernate-cleanup.service
+hibernation/hibernate-prepare.service
 systemd/swapfile.service

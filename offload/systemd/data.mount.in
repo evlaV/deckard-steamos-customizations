@@ -8,11 +8,11 @@
 #  or (at your option) any later version.
 
 [Unit]
-Description=SteamOS Offload - /opt
+Description=SteamOS Offload - /data
 
 [Mount]
-What=@offload_absdir@/opt
-Where=/opt
+What=@offload_absdir@/data
+Where=/data
 Type=none
 Options=bind
 
