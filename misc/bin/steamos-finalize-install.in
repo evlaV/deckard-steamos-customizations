@@ -28,6 +28,14 @@ EOF
 # Install boot artifacts
 function install_bootloaders
 {
+    # If there is a `/boot/kernelsetup.sh`, do that and nothing else.
+    if [[ -f /boot/kernelsetup.sh ]]; then
+        pushd /boot >/dev/null
+        ./kernelsetup.sh
+        popd >/dev/null
+        return
+    fi
+
     if [[ ! "${no_bootloaders:-}" ]]
     then
         typeset ident
