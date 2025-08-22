@@ -2,6 +2,7 @@ systemd/data.mount
 systemd/root.mount
 systemd/srv.mount
 systemd/var-cache-pacman.mount
+systemd/var-lib-containers.mount
 systemd/var-lib-docker.mount
 systemd/var-lib-flatpak.mount
 systemd/var-lib-systemd-coredump.mount
