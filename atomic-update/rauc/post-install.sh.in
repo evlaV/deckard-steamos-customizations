@@ -191,14 +191,13 @@ log "Update slot candidate is $UPDATED_SLOT"
 log "Configuring the 'other' efi partition $EFI_DEVICE_OTHER " \
     "($PRESERVED_SLOT -> $UPDATED_SLOT)"
 
-[ -b "$EFI_DEVICE_OTHER" ] || \
-    fail "Other efi device '$EFI_DEVICE_OTHER' not found"
-
-mount "$EFI_DEVICE_OTHER" /mnt
-configure_other_efi /mnt $PRESERVED_SLOT $UPDATED_SLOT || \
-    err "Failed to configure the 'other' efi"
-umount /mnt
-
+# Allow `efi` to not exist for EV2
+if [ -b "$EFI_DEVICE_OTHER" ]; then
+    mount "$EFI_DEVICE_OTHER" /mnt
+    configure_other_efi /mnt $PRESERVED_SLOT $UPDATED_SLOT || \
+        err "Failed to configure the 'other' efi"
+    umount /mnt
+fi
 #
 # Handle the 'other' var partition
 #
