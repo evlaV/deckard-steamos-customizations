@@ -110,6 +110,12 @@ ATOMUPD_BRANCHES_LIST := stable;rc;beta;bc;main
 # Directory where RAUC will mount the update bundle
 RAUC_RUNTIME_DIR := /run/rauc
 
+# Identifies the RAUC bundle's architecture
+RAUC_COMPATIBLE := steamos-amd64
+ifeq ($(shell uname -m),aarch64)
+RAUC_COMPATIBLE := steamos-aarch64
+endif
+
 # Directory where temporary update files will be placed
 STEAMOS_ATOMUPD_RUNTIME_DIR := /run/steamos-atomupd
 
@@ -158,6 +164,7 @@ SDDM_AUTOLOGIN_CONF := $(sysconfdir)/sddm.conf.d/zz-steamos-autologin.conf
 	  -e 's|@atomupd_variants_list@|$(ATOMUPD_VARIANTS_LIST)|g' \
 	  -e 's|@atomupd_branches_list@|$(ATOMUPD_BRANCHES_LIST)|g' \
 	  -e 's|@rauc_runtime_dir@|$(RAUC_RUNTIME_DIR)|g' \
+	  -e 's|@rauc_compatible@|$(RAUC_COMPATIBLE)|g' \
 	  -e 's|@steamos_atomupd_runtime_dir@|$(STEAMOS_ATOMUPD_RUNTIME_DIR)|g' \
 	  -e 's|@reboot_for_update@|$(REBOOT_FOR_UPDATE)|g' \
 	  -e 's|@atomic_update_conf_d@|$(ATOMIC_UPDATE_CONF_D)|g' \
