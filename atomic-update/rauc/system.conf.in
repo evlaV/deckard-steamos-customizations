@@ -1,5 +1,5 @@
 [system]
-compatible=steamos-amd64
+compatible=@rauc_compatible@
 bootloader=custom
 max-bundle-download-size=268435456
 activate-installed=false

@@ -118,6 +118,12 @@ ATOMUPD_DEV_BRANCHES_LIST := main;staging
 # Directory where RAUC will mount the update bundle
 RAUC_RUNTIME_DIR := /run/rauc
 
+# Identifies the RAUC bundle's architecture
+RAUC_COMPATIBLE := steamos-amd64
+ifeq ($(shell uname -m),aarch64)
+RAUC_COMPATIBLE := steamos-aarch64
+endif
+
 # Directory where temporary update files will be placed
 STEAMOS_ATOMUPD_RUNTIME_DIR := /run/steamos-atomupd
 
@@ -171,6 +177,7 @@ ETC_BACKUP_DIR := /var/lib/steamos-atomupd/etc_backup
 	  -e 's|@atomupd_branches_list@|$(ATOMUPD_BRANCHES_LIST)|g' \
 	  -e 's|@atomupd_dev_branches_list@|$(ATOMUPD_DEV_BRANCHES_LIST)|g' \
 	  -e 's|@rauc_runtime_dir@|$(RAUC_RUNTIME_DIR)|g' \
+	  -e 's|@rauc_compatible@|$(RAUC_COMPATIBLE)|g' \
 	  -e 's|@steamos_atomupd_runtime_dir@|$(STEAMOS_ATOMUPD_RUNTIME_DIR)|g' \
 	  -e 's|@reboot_for_update@|$(REBOOT_FOR_UPDATE)|g' \
 	  -e 's|@holo_booted_slot_sync_trigger@|$(HOLO_BOOTED_SLOT_SYNC_TRIGGER)|g' \
