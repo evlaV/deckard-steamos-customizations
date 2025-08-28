@@ -22,23 +22,7 @@ bootname=A
 device=@udev_symlinks_absdir@/A/rootfs
 type=raw
 
-[slot.verity.0]
-device=@udev_symlinks_absdir@/A/verity
-parent=rootfs.0
-type=raw
-
 [slot.rootfs.1]
 bootname=B
 device=@udev_symlinks_absdir@/B/rootfs
 type=raw
-
-[slot.verity.1]
-device=@udev_symlinks_absdir@/B/verity
-parent=rootfs.1
-type=raw
-
-[slot.rootfs.2]
-bootname=dev
-device=@udev_symlinks_absdir@/dev/rootfs
-type=raw
-readonly=true
