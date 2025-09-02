@@ -15,5 +15,5 @@ install: all
 	install -d $(DESTDIR)$(libdir)/tmpfiles.d
 	install -m 0644 $(TMPFILES) $(DESTDIR)$(libdir)/tmpfiles.d
 	install -d $(DESTDIR)$(systemdunitsdir)
-	install -m 644 $(UNITS) $(DESTDIR)$(systemdunitsdir)
+	install -m 644 $(foreach u,$(UNITS),$(call quote,$(u))) $(DESTDIR)$(systemdunitsdir)
 	$(call enable-systemd-units,$(DESTDIR)$(systemdunitsdir),$(notdir $(UNITS)))

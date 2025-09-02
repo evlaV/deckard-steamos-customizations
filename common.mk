@@ -184,10 +184,10 @@ ETC_BACKUP_DIR := /var/lib/steamos-atomupd/etc_backup
 	  -e 's|@atomic_update_conf_d@|$(ATOMIC_UPDATE_CONF_D)|g' \
 	  -e 's|@rauc_libdir@|$(RAUC_LIBDIR)|g' \
 	  -e 's|@etc_backup_dir@|$(ETC_BACKUP_DIR)|g' \
-	  $< > $@
-	@if grep -q '@[[:alnum:]_]+@' $@; then \
+	  "$<" > "$@"
+	@if grep -q '@[[:alnum:]_]+@' "$@"; then \
 	  echo >&2 "Substitution error!!!"; \
-	  grep -Hn '@[[:alnum:]_]+@' $@; \
+	  grep -Hn '@[[:alnum:]_]+@' "$@"; \
 	  false; \
 	fi
 
@@ -221,3 +221,7 @@ define enable-systemd-units
 	@echo "Enabling systemd units $(2)"
 	@$(foreach service,$(2),$(call _enable-systemd-unit,$(1),$(service)))
 endef
+
+
+# Dodge the shell interpreting systemd's escaped filenames (e.g. `\x2d`)
+quote = $(foreach f,$(1),'$(f)')
