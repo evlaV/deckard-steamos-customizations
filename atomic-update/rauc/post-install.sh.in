@@ -374,7 +374,7 @@ sync_var_mountpoints() {
 
     # We exclude the directories /var/lib/{dkms,modules,pacman}, as they don't
     # really represent a state that we want to keep, but rather a part of the
-    # rootfs that ends up leaving in /var for technical reasons. These pieces
+    # rootfs that ends up living in /var for technical reasons. These pieces
     # must be empty on first boot, so that they can be initialized from the
     # factory that is shipped with the rootfs.
     #
