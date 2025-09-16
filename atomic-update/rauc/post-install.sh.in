@@ -232,6 +232,13 @@ umount /mnt/var
 umount /mnt
 
 #
+# Reset SteamVR to the system SteamVR installation
+#
+if [[ -n "$(which steamvr)" ]]; then
+    steamvr setpathdefault
+fi
+
+#
 # Handle the bootloaders and network configuration
 #
 
