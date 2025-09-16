@@ -546,6 +546,13 @@ if [ -n "$VAR_DEVICE_FROM" ]; then
 fi
 
 #
+# Reset SteamVR to the system SteamVR installation
+#
+if [[ -n "$(which steamvr)" ]]; then
+    steamvr setpathdefault
+fi
+
+#
 # Handle the bootloaders and network configuration
 #
 
