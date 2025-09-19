@@ -1,10 +1,10 @@
 include ../common.mk
 
-STEAMOS_DEBUGINFOD_CONFIG := $(wildcard *.urls)
+STEAMOS_DEBUGINFOD_CONFIGS := $(wildcard *.urls)
 
 all:
 
 install: all
-	install -d $(DESTDIR)/etc/debuginfod
-	install -m 0644 $(STEAMOS_DEBUGINFOD_CONFIG) $(DESTDIR)/etc/debuginfod/
-
+	for CONFIG in $(STEAMOS_DEBUGINFOD_CONFIGS); do \
+		install -D -m644 $${CONFIG} $(DESTDIR)/etc/debuginfod/$${CONFIG}; \
+	done
