@@ -235,7 +235,7 @@ umount /mnt
 # Reset SteamVR to the system SteamVR installation
 #
 if [[ -n "$(which steamvr)" ]]; then
-    steamvr setpathdefault
+    steamvr setpathdefault || true
 fi
 
 #
