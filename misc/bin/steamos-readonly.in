@@ -117,6 +117,10 @@ get_fstype() {
     esac
 }
 
+# HACK: We need to always have `/` mounted as `rw` for this tool to work properly.
+# Remove this once https://gitlab.steamos.cloud/deckard/deckardos/u-boot/-/merge_requests/5 is merged!
+mount -o remount,rw /
+
 get_fstype
 
 case "${1:-}" in
