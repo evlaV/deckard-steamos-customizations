@@ -236,6 +236,7 @@ umount /mnt
 #
 if [[ -n "$(which steamvr)" ]]; then
     steamvr setpathdefault || true
+    steamvr enable || true
 fi
 
 #
