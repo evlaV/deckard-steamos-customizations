@@ -10,5 +10,5 @@
 d @offload_absdir@/srv/ftp 0555 root ftp
 d @offload_absdir@/srv/http 0755
 
-# Ensure `data` is mounted as writable by steamvr
-d @offload_absdir@/data 0755 steamvr steamvr -
+# Ensure `data` is mounted as writable by steamos
+d @offload_absdir@/data 0755 steamos steamos -
