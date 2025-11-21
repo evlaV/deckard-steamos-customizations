@@ -15,8 +15,14 @@ After=sysinit.target
 # We don't want anything that will start user sessions to happen before we fix the /home/ folder
 Before=multi-user.target
 Before=steamos-create-homedir.service
-ConditionPathIsDirectory=/home/doorstop
+
+# We will run if doorstop or steamvr user directories exist
+ConditionPathIsDirectory=|/home/doorstop
+ConditionPathIsDirectory=|/home/steamvr
+
+# We will NOT run if doorstop or steamvr symlinks exist
 ConditionPathIsSymbolicLink=!/home/doorstop
+ConditionPathIsSymbolicLink=!/home/steamvr
 
 [Service]
 Type=oneshot

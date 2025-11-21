@@ -145,6 +145,24 @@ function migrate_home_steamos_update
     rm -f "/home/deck/.config/autostart/steamos-update-os-notifier.desktop" || :
     rm -f "/home/deck/.config/kupdatenotifierrc" || :
 
+    # Migrate users from old usernames to new `steamos` user.
+    # Because this runs _after_ the `/etc` migration has already occured, we're looking at the files
+    # in the new `/etc` that were copied from the currently-running slot, so it's correct to inspect
+    # the current state, and then modify it to match the expectations of the current OS image.  (That
+    # is, to user the username `steamos`)
+    NEW_USERNAME="steamos"
+    OLD_USERNAME="$(getent passwd 1000 | cut -d: -f1)"
+
+    # Only attempt migration if we got a 1000 uid username at all.  If we didn't..... good luck, my dude.
+    if [[ -n "${OLD_USERNAME}" ]]; then
+        if [[ "${OLD_USERNAME}" != "${NEW_USERNAME}" ]]; then
+            # Force-rename user from whatever it was to steamos
+            usermod -l "${NEW_USERNAME}" -d "/home/${NEW_USERNAME}" "${OLD_USERNAME}" || :
+            groupmod -n "${NEW_USERNAME}" "${OLD_USERNAME}" || :
+            sed -i "s/^${OLD_USERNAME}:/${NEW_USERNAME}:/" /etc/subuid || :
+            sed -i "s/^${OLD_USERNAME}:/${NEW_USERNAME}:/" /etc/subgid || :
+        fi
+    fi
 }
 
 function update_pacman_dbpath
