@@ -18,8 +18,14 @@
 ## with a few cleanups
 ##
 
-# The original OOBE username, should match what the service file is keyed on.
-MIGRATE_USERNAME=doorstop
+if [[ $(uname -m) == "aarch64" ]]; then
+  # An old username that steam frame used to use
+  MIGRATE_USERNAME=steamvr
+else
+  # The original OOBE username, should match what the service file is keyed on.
+  MIGRATE_USERNAME=doorstop
+fi
+
 # The user id that user's data is migrated to
 MIGRATE_USERID=1000
 
