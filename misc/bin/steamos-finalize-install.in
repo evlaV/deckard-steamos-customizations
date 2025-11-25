@@ -156,8 +156,14 @@ function migrate_home_steamos_update
         if [[ "${OLD_USERNAME}" != "${NEW_USERNAME}" ]]; then
             echo "migrate_home_steamos_update: Migrating user from ${OLD_USERNAME} -> ${NEW_USERNAME}"
 
-            # Only modify files left in the `etc` overlay upperdir
-            for USER_DB in group gshadow passwd shadow subgid subuid; do
+            # We only modify files left in the `etc` overlay upperdir
+            # We must do this file-by-file `sed` operation because the user may have only
+            # modified a single file (e.g. `shadow` by changing their password, or perhaps
+            # `group` by adding a new group), thereby creating a mismatch between `passwd`
+            # and `shadow`.  This tends to cause issues when using tools like `usermod`
+            # to do the renaming, so we resort to `sed`.
+
+            for USER_DB in passwd gshadow shadow group subuid subgid; do
                 USER_DB="/var/lib/overlays/etc/upper/${USER_DB}"
                 if [[ ! -f "${USER_DB}" ]]; then
                     continue
@@ -168,18 +174,14 @@ function migrate_home_steamos_update
                     # in-place editing
                     -i
 
-                    # The beginning of a database entry, e.g. "steamvr:" at the beginning of the line
-                    -e "s&^${OLD_USERNAME}:&${NEW_USERNAME}:&"
+                    # This matches an element in a database, delimited by beginning/end of line,
+                    # colon for database keys, or comma (for group lists).
+                    -E "s&(^|:|,)${OLD_USERNAME}(\$|:|,)&\1${NEW_USERNAME}\2&"
 
-                    # A home entry, e.g. `:/home/steamvr:`
+                    # This matches a home entry, e.g. `:/home/steamvr:`
                     -e "s&:/home/${OLD_USERNAME}:&:/home/${NEW_USERNAME}:&"
                 )
 
-                # We must do this file-by-file `sed` operation because the user may have only
-                # modified a single file (e.g. `shadow` by changing their password, or perhaps
-                # `group` by adding a new group), thereby creating a mismatch between `passwd`
-                # and `shadow`.  This tends to cause issues when using tools like `usermod`
-                # to do the renaming, so we resort to `sed`.
                 sed "${SED_OPTIONS[@]}" "${USER_DB}"
             done
         else
