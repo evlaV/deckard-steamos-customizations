@@ -9,6 +9,7 @@ bin/steamos-firmware-update
 bin/steamos-mount
 bin/steamos-partition
 bin/steamos-partsets
+bin/steamos-passwd
 bin/steamos-readonly
 bin/steamos-unminimize
 bin/steamos-verity
