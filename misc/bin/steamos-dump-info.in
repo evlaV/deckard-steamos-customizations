@@ -30,30 +30,53 @@ PRETTY_NAME=
 . /etc/os-release
 
 prefix="SteamOS System Info:"
-printf "$prefix %s\n" "${PRETTY_NAME:-<\$PRETTY_NAME UNSET>}"
+printf "$prefix %s %s\n" "${PRETTY_NAME:-<\$PRETTY_NAME UNSET>}" "${BUILD_ID:-<\$BUILD_ID UNSET>}"
 
 partition="$(steamos-partition 2>/dev/null)" || partition="<couldn't invoke steamos-partition>"
 printf "$prefix %s\n" "$partition"
 
 echo "$prefix Serial Numbers:"
-for s in board_serial product_serial; do
+if [[ -e /usr/lib/deckard-eeprom/eeprom_console ]]; then
+  get_serial() {
+    /usr/lib/deckard-eeprom/eeprom_console get $1 2>/dev/null || echo '<not readable from eeprom>'
+  }
+  SERIAL_LIST=(
+    mpcba_sn unit_sn core_cm_sn core_assembly_cm_sn heat_pipe_sn fan_sn
+    midwall_heat_pipe_sn strap_sn left_audio_sn right_audio_sn
+  )
+else
+  get_serial() {
+    cat /sys/class/dmi/id/$s 2>/dev/null || echo '<not readable from sysfs>'
+  }
+  SERIAL_LIST=(
+    board_serial product_serial
+  )
+fi
+
+for s in "${SERIAL_LIST[@]}"; do
   # This handles cases where the file doesn't exist, e.g. when in a VM,
   # while still printing something so that it's obvious that this file
   # is empty or doesn't exist.
-  printf "$prefix\t$s: %s\n" "$(cat /sys/class/dmi/id/$s 2>/dev/null || echo '<not readable from sysfs>')"
+  printf "$prefix\t$s: %s\n" "$(get_serial "${s}")"
 done
 
 # Battery info
-# Use the first battery returned by matching in the shell
-batt_path="$(ls -d /sys/class/power_supply/BAT? 2>/dev/null)"
 echo "$prefix Battery:"
-if [ ! -d "$batt_path" ]; then
-  printf "%s\tNo battery found!\n" "$prefix"
+if [[ -d /run/deckardcharger ]]; then
+  printf "%s\tAC status: %s\n" "${prefix}" "$(cat /run/deckardcharger/ac_status)"
+  printf "%s\tBattery status: %s\n" "${prefix}" "$(cat /run/deckardcharger/battery_status)"
+  printf "%s\tCapacity: %s\n" "${prefix}" "$(cat /run/deckardcharger/battery_percent)"
 else
-  for prop in model_name status capacity; do
-    val="$(cat "$batt_path/$prop" || echo "<$prop not found>")"
-    printf "%s\t%s: %s\n" "$prefix" "$prop" "$val"
-  done
+  # Use the first battery returned by matching in the shell
+  batt_path="$(ls -d /sys/class/power_supply/BAT? 2>/dev/null || true)"
+  if [ ! -d "$batt_path" ]; then
+    printf "%s\tNo battery found!\n" "$prefix"
+  else
+    for prop in model_name status capacity; do
+      val="$(cat "$batt_path/$prop" || echo "<$prop not found>")"
+      printf "%s\t%s: %s\n" "$prefix" "$prop" "$val"
+    done
+  fi
 fi
 
 # bootconfig
