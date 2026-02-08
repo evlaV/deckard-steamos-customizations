@@ -258,6 +258,14 @@ then
         migrate_home_steamos_update
         update_pacman_dbpath # DBPath is on the RO rootfs with 3.5+
         cleanup_atomupd_conf
+
+        # If the recorded variant is `vr-goldmaster`, clear all atomupd preferences
+        # We can remove this once we have actually EOL'ed `vr-goldmaster` -> `vr`,
+        # which should happen pre-launch day.
+        ATOMUPD_PREFS="/var/lib/overlays/etc/upper/steamos-atomupd/preferences.conf"
+        if grep -q "Variant=vr-goldmaster" "${ATOMUPD_PREFS}"; then
+            rm -f "${ATOMUPD_PREFS}"
+        fi
     else
         echo "Skipping configuration migration steps as this is not running in a chroot."
     fi
