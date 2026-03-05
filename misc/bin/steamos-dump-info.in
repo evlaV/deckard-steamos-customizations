@@ -80,7 +80,7 @@ fi
 
 # bootconfig
 echo "$prefix Boot Config:"
-if bootconf="$(steamos-bootconf dump-config 2>/dev/null)"; then
+if bootconf="$(/usr/lib/steamos-efi/steamos-bootconf dump-config 2>/dev/null)"; then
   for part in A B; do
     for param in boot-attempts boot-count boot-requested-at boot-time comment image-invalid; do
       val="$(echo "$bootconf" | grep -e "^$part.*$param" | cut -f3)"
@@ -91,3 +91,7 @@ if bootconf="$(steamos-bootconf dump-config 2>/dev/null)"; then
 else
   printf "%s\t%s\n" "$prefix" "<couldn't invoke steamos-bootconf>"
 fi
+
+echo "--------------------------"
+echo "splctl info:"
+steamos-bootconf dump-config
