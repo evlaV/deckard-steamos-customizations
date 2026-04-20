@@ -232,10 +232,16 @@ umount /mnt/var
 umount /mnt
 
 #
-# Reset SteamVR to the system SteamVR installation
+# Reset SteamVR to the system SteamVR installation if we're not one of the default paths
 #
 if [[ -n "$(which steamvr)" ]]; then
-    steamvr setpathdefault || true
+    VALID_STEAMVR_PATHS=(
+        /opt/steamvr
+        /home/steamos/work/MainSteamVR
+    )
+    if [[ " ${VALID_STEAMVR_PATHS[@]} " != *" $(steamvr path) "* ]]; then
+        steamvr setpathdefault || true
+    fi
     steamvr enable || true
 fi
 
