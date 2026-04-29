@@ -57,8 +57,8 @@ umount /mnt
 # We run this even if a part of `holo-sync-var catchup` unexpectedly failed.
 # This ensures that we have the expected files in the new /etc and /var, and that they didn't
 # get overwritten by `holo-sync-var`.
-if ! holo-chroot --partset $UPDATED_SLOT -- holo-finalize-install --no-boot-install \
-  && ! holo-chroot --partset $UPDATED_SLOT -- steamos-finalize-install --no-boot-install
+if ! steamos-chroot --partset $UPDATED_SLOT -- holo-finalize-install --no-boot-install \
+  && ! steamos-chroot --partset $UPDATED_SLOT -- steamos-finalize-install --no-boot-install
 then
     warn "Failed to migrate the configuration changes!"
 fi
