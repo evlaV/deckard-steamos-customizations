@@ -1,0 +1,10 @@
+# With CONFIG_IOMMU_DEFAULT_DMA_STRICT=y, every RX buffer unmap does a
+# synchronous SMMU TLB sync with IRQs off (~32% of NET_RX samples). DMA-FQ
+# batches these into one flush per 256 unmaps per CPU, or every 10 ms.
+# Trade-off: until that flush, the device can still reach recently unmapped
+# (possibly reused) pages, and a write-after-unmap bug corrupts memory
+# silently instead of raising an SMMU fault.
+#
+# DMA -> DMA-FQ is allowed live, bound or not (drivers/iommu/iommu.c:3111).
+# Going back to strict needs a driver unbind, or a reboot without this rule.
+ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x17cb", ATTR{device}=="0x1107", ATTR{iommu_group/type}="DMA-FQ"
